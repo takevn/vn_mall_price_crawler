@@ -1,0 +1,119 @@
+================================================================================
+PATCH FILE: Fix for KeyError: 'Model' at line 366
+================================================================================
+
+LOCATION: Around line 366 in "Supermarket Price Crawler.py"
+
+PROBLEM:
+The merge operation fails because scraped_df doesn't have 'Model' column.
+
+ORIGINAL CODE (around line 366):
+--------------------------------------------------------------------------------
+# ... previous code ...
+result = pd.merge(original_df, scraped_df, on='Model', how='left')
+# ... next code ...
+--------------------------------------------------------------------------------
+
+FIXED CODE (Option 1 - Using safe_merge):
+--------------------------------------------------------------------------------
+# Add import at the top of the file (around line 1-20)
+from fix_merge_issue import safe_merge
+
+# ... previous code ...
+
+# Replace line 366 with:
+result = safe_merge(original_df, scraped_df, on='Model', how='left')
+
+# ... next code ...
+--------------------------------------------------------------------------------
+
+FIXED CODE (Option 2 - Manual fix without external module):
+--------------------------------------------------------------------------------
+# ... previous code ...
+
+# Add BEFORE line 366:
+# Ensure scraped_df has Model column for merging
+if 'Model' not in scraped_df.columns:
+    # Check if we can match by index/position
+    if len(scraped_df) == len(original_df):
+        # If same length, assume same order
+        scraped_df = scraped_df.copy()
+        scraped_df['Model'] = original_df['Model'].values
+    else:
+        # Try to match by URL columns
+        url_columns = [col for col in original_df.columns 
+                      if any(store in str(col) for store in ['Phong Vũ', 'Nguyễn Kim', 'Điện máy xanh'])]
+        if url_columns:
+            # Find matching URL column in scraped data
+            for url_col in url_columns:
+                if url_col in scraped_df.columns:
+                    # Merge to get Model
+                    temp_merge = pd.merge(
+                        original_df[['Model', url_col]], 
+                        scraped_df, 
+                        left_on=url_col, 
+                        right_on=url_col, 
+                        how='right'
+                    )
+                    if 'Model' in temp_merge.columns:
+                        scraped_df['Model'] = temp_merge['Model'].values
+                        break
+        # Fallback: create Model from index if still missing
+        if 'Model' not in scraped_df.columns:
+            scraped_df['Model'] = [f"Item_{i+1}" for i in range(len(scraped_df))]
+            print("Warning: Created Model column from index. Results may not match correctly.")
+
+# Now perform merge (line 366)
+result = pd.merge(original_df, scraped_df, on='Model', how='left')
+
+# ... next code ...
+--------------------------------------------------------------------------------
+
+FIXED CODE (Option 3 - Debug version to understand the issue):
+--------------------------------------------------------------------------------
+# ... previous code ...
+
+# Add BEFORE line 366 for debugging:
+print("\n=== DEBUG: Before merge ===")
+print(f"original_df shape: {original_df.shape}")
+print(f"original_df columns: {original_df.columns.tolist()}")
+print(f"scraped_df shape: {scraped_df.shape}")
+print(f"scraped_df columns: {scraped_df.columns.tolist()}")
+print(f"\noriginal_df head:\n{original_df.head()}")
+print(f"\nscraped_df head:\n{scraped_df.head()}")
+
+if 'Model' not in scraped_df.columns:
+    print("\nERROR: 'Model' column missing from scraped_df!")
+    print("Attempting to fix...")
+    
+    # Try to add Model column
+    if len(scraped_df) == len(original_df):
+        scraped_df['Model'] = original_df['Model'].values
+        print("Fixed: Added Model column by position matching")
+    else:
+        print(f"Length mismatch: original={len(original_df)}, scraped={len(scraped_df)}")
+        # Add your fix logic here based on what you see in the debug output
+        raise ValueError("Cannot automatically fix Model column. Check debug output above.")
+
+# Now perform merge (line 366)
+result = pd.merge(original_df, scraped_df, on='Model', how='left')
+print(f"\nMerge successful: {len(result)} rows")
+
+# ... next code ...
+--------------------------------------------------------------------------------
+
+HOW TO APPLY:
+1. Open "Supermarket Price Crawler.py" in a text editor
+2. Navigate to line 366 (or search for "pd.merge")
+3. Choose one of the fix options above
+4. Replace the merge line with the fixed version
+5. If using Option 1, also add the import at the top
+6. Save and test
+
+RECOMMENDED: Use Option 1 (safe_merge) as it's the cleanest and most robust.
+
+
+
+
+
+

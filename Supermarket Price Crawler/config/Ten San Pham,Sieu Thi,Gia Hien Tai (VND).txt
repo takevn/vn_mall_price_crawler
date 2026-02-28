@@ -1,0 +1,43 @@
+Ten San Pham,Sieu Thi,Gia Hien Tai (VND),Link San Pham
+May in Laser Brother HL-L2321D,Phong Vu,3.339.000,https://phongvu.vn/p/may-in-laser-brother-hl-l2321d
+May in Laser Brother HL-L2321D,The Gioi Di Dong,3.190.000,https://www.thegioididong.com/may-in/brother-hl-l2321d
+May in Laser Brother HL-L2321D,FPT Shop,3.190.000,https://fptshop.com.vn/may-in/may-in-laser-trang-den-brother-hl-l2321d
+May in Laser Brother HL-L2321D,Nguyen Kim,3.190.000,https://www.nguyenkim.com/may-in-laser-brother-hl-l2321d.html
+May in Laser Brother HL-L2366DW (Wifi),The Gioi Di Dong,4.190.000,https://www.thegioididong.com/may-in/brother-hl-l2366dw-wifi
+May in Laser Brother HL-L2366DW (Wifi),Nguyen Kim,4.290.000,https://www.nguyenkim.com/may-in-laser-brother-hl-l2366dw.html
+May in Laser Brother HL-L2366DW (Wifi),Phong Vu,4.590.000,https://phongvu.vn/may-in-laser-brother-hl-l2366dw--s1501198
+May in Da Nang Brother MFC-L2701DW,FPT Shop,6.290.000,https://fptshop.com.vn/may-in/may-in-laser-da-nang-brother-mfc-l2701dw
+May in Da Nang Brother MFC-L2701DW,Nguyen Kim,6.890.000,https://www.nguyenkim.com/may-in-laser-da-nang-brother-mfc-l2701dw-vn.html
+May in Da Nang Brother MFC-L2701DW,Phong Vu,6.690.000,https://phongvu.vn/may-in-laser-trang-den-brother-mfc-l2701dw--s1502444
+May in Phun Mau Brother DCP-T420W,The Gioi Di Dong,3.590.000,https://www.thegioididong.com/may-in/brother-phun-mau-dcp-t420w
+May in Phun Mau Brother DCP-T430W,Phong Vu,3.690.000,https://phongvu.vn/may-in-phun-mau-brother-dcp-t430w--s210800366
+May in Phun Mau Brother DCP-T530DW,Phong Vu,4.690.000,https://phongvu.vn/may-in-phun-da-chuc-nang-brother-dcp-t530dw--s210800367
+May in Phun Mau Brother DCP-T720DW,Nguyen Kim,5.590.000,https://www.nguyenkim.com/may-in-phun-brother-dcp-t720dw.html
+May in Laser Don Nang Brother HL-B2180DW,The Gioi Di Dong,4.390.000,https://www.thegioididong.com/may-in/brother-hl-b2180dw
+May in Laser Don Nang Brother HL-B2180DW,FPT Shop,4.490.000,https://fptshop.com.vn/may-in/may-in-laser-trang-den-brother-hl-b2180dw
+May in Laser Don Nang Brother HL-B2100D,Nguyen Kim,3.590.000,https://www.nguyenkim.com/may-in-laser-brother-hl-b2100d.html
+May in Laser Don Nang Brother HL-B2100D,The Gioi Di Dong,3.590.000,https://www.thegioididong.com/may-in/brother-hl-b2100d
+May in Da Nang Brother DCP-B7535DW,Nguyen Kim,5.690.000,https://www.nguyenkim.com/may-in-laser-brother-dcp-b7535dw.html
+May in Da Nang Brother DCP-L2520D,The Gioi Di Dong,4.590.000,https://www.thegioididong.com/may-in/brother-dcp-l2520d
+DANH MUC TONG HOP,,LINK CHECK GIA,
+Trang chu May in Brother Nguyen Kim,Nguyen Kim,Cap nhat lien tuc,https://www.nguyenkim.com/may-in-brother/
+Trang chu May in Brother Phong Vu,Phong Vu,Cap nhat lien tuc,https://phongvu.vn/c/may-in-brother
+Trang chu May in Brother TGDD,The Gioi Di Dong,Cap nhat lien tuc,https://www.thegioididong.com/may-in-brother
+Trang chu May in Brother FPT Shop,FPT Shop,Cap nhat lien tuc,https://fptshop.com.vn/may-in/brother
+Máy in trắng đen đơn năng Brother HL-B2180DW,Phong Vu,4.390.000,https://phongvu.vn/may-in-trang-den-don-nang-brother-hl-b2180dw--s231103612
+Máy in Brother DCP-T226 (Trắng),Phong Vu,2.790.000,https://phongvu.vn/may-in-brother-dcp-t226-trang--s220802240
+Máy in trắng đen đơn năng Brother HL-B2100D,Phong Vu,3.590.000,https://phongvu.vn/may-in-trang-den-don-nang-brother-hl-b2100d--s231103611
+Máy in trắng đen đa năng Brother DCP-B7640DW,Phong Vu,5.890.000,https://phongvu.vn/may-in-trang-den-da-nang-brother-dcp-b7640dw--s231103614
+Máy in trắng đen đa năng Brother DCP-B7620DW,Phong Vu,5.690.000,https://phongvu.vn/may-in-trang-den-da-nang-brother-dcp-b7620dw--s231103613
+Máy in laser trắng đen BROTHER HL-L2321D,Phong Vu,3.190.000,https://phongvu.vn/may-in-laser-trang-den-brother-hl-l2321d--s1404531
+Máy in laser trắng đen Brother DCP-B7535DW,Phong Vu,5.290.000,https://phongvu.vn/may-in-brother-dcp-b7535dw--s18120286
+Máy in Brother DCP-T720DW,Phong Vu,5.590.000,https://phongvu.vn/may-in-brother-dcp-t720dw--s210400365
+Máy in phun đa chức năng Brother MFC-T930DW,Phong Vu,8.600.000,https://phongvu.vn/may-in-phun-da-chuc-nang-brother-mfc-t930dw--s250206216
+Máy in phun đa chức năng Brother DCP-T530DW,Phong Vu,4.890.000,https://phongvu.vn/may-in-phun-da-chuc-nang-brother-dcp-t530dw--s250206215
+Máy in phun đa chức năng Brother DCP-T430W,Phong Vu,3.790.000,https://phongvu.vn/may-in-phun-da-chuc-nang-brother-dcp-t430w--s250206208
+Máy in phun đa chức năng Brother DCP-T830DW,Phong Vu,6.500.000,https://phongvu.vn/may-in-phun-da-chuc-nang-brother-dcp-t830dw--s250206209
+Máy in phun đa chức năng Brother DCP-T730DW,Phong Vu,5.590.000,https://phongvu.vn/may-in-phun-da-chuc-nang-brother-mfc-t730dw--s250206210
+Máy in Laser màu đa năng Brother DCP-L3560CDW,Phong Vu,11.790.000,https://phongvu.vn/may-in-mau-da-chuc-nang-brother-dcp-l3560cdw--s240602397
+Máy in Laser màu đơn năng Brother HL-L3280CDW,Phong Vu,7.490.000,https://phongvu.vn/may-in-mau-don-nang-brother-hl-l3280cdw--s240602390
+Máy in Laser màu đơn năng Brother HL-L3240CDW,Phong Vu,6.990.000,https://phongvu.vn/may-in-mau-don-nang-brother-hl-l3240cdw--s240602385
+Máy in trắng đen đa năng Brother MFC-B7810DW,Phong Vu,6.890.000,https://phongvu.vn/may-in-trang-den-da-nang-brother-mfc-b7810dw--s231103615
