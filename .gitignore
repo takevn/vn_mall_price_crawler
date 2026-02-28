@@ -1,0 +1,37 @@
+# Virtualenv
+venv/
+.venv/
+env/
+
+# Build / đóng gói
+dist/
+build/
+*.spec
+dist.zip
+*.dmg
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.so
+.eggs/
+*.egg-info/
+*.egg
+
+# IDE / OS
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Output chạy thử (giữ bản local, không push)
+output_prices*.csv
+
+# Toàn bộ thư mục build Windows CŨ (exe, dll, python38...) — chỉ giữ config
+Supermarket Price Crawler/*
+!Supermarket Price Crawler/config/
+!Supermarket Price Crawler/config/**
