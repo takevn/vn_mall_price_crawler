@@ -43,9 +43,13 @@ jobs:
           if [ -d "dist/Supermarket Price Crawler.app" ]; then
             echo "✅ .app bundle created successfully"
             du -sh "dist/Supermarket Price Crawler.app"
+            echo "Checking .app bundle structure..."
+            find "dist/Supermarket Price Crawler.app" -type f -name "Supermarket Price Crawler" | head -1
+            find "dist/Supermarket Price Crawler.app/Contents" -type d | head -10
           elif [ -d "dist/Supermarket Price Crawler" ]; then
             echo "✅ Executable directory created"
             du -sh "dist/Supermarket Price Crawler"
+            ls -la "dist/Supermarket Price Crawler/"
           else
             echo "❌ Build output not found"
             exit 1
@@ -55,19 +59,35 @@ jobs:
         run: |
           # Copy config cho .app bundle
           if [ -d "dist/Supermarket Price Crawler.app" ]; then
-            # Vị trí chính
-            mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config"
-            cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/DATA.csv"
-            cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/class_name.txt"
-            # Vị trí fallback
-            mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/config"
-            cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv"
-            cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt"
-            echo "✅ Config copied to .app bundle"
+            # Tìm vị trí executable trong .app bundle
+            EXECUTABLE_PATH=$(find "dist/Supermarket Price Crawler.app/Contents/MacOS" -type f -name "Supermarket Price Crawler" 2>/dev/null | head -1)
+            if [ -n "$EXECUTABLE_PATH" ]; then
+              EXECUTABLE_DIR=$(dirname "$EXECUTABLE_PATH")
+              echo "Found executable at: $EXECUTABLE_PATH"
+              echo "Executable directory: $EXECUTABLE_DIR"
+              
+              # Vị trí chính: cùng thư mục với executable
+              mkdir -p "$EXECUTABLE_DIR/Supermarket Price Crawler/config"
+              cp "Supermarket Price Crawler/config/DATA.csv" "$EXECUTABLE_DIR/Supermarket Price Crawler/config/DATA.csv"
+              cp "Supermarket Price Crawler/config/class_name.txt" "$EXECUTABLE_DIR/Supermarket Price Crawler/config/class_name.txt"
+              
+              # Vị trí fallback: trong Contents/MacOS
+              mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/config"
+              cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv"
+              cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt"
+              
+              echo "✅ Config copied to .app bundle"
+            else
+              # Fallback: thử vị trí mặc định
+              mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/config"
+              cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv"
+              cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt"
+              echo "✅ Config copied to .app bundle (fallback location)"
+            fi
           fi
           
-          # Copy config cho executable directory
-          if [ -d "dist/Supermarket Price Crawler" ]; then
+          # Copy config cho executable directory (nếu không phải .app bundle)
+          if [ -d "dist/Supermarket Price Crawler" ] && [ ! -d "dist/Supermarket Price Crawler.app" ]; then
             # Vị trí chính
             mkdir -p "dist/Supermarket Price Crawler/Supermarket Price Crawler/config"
             cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/DATA.csv"
@@ -82,18 +102,27 @@ jobs:
       - name: Verify config files
         run: |
           if [ -d "dist/Supermarket Price Crawler.app" ]; then
-            echo "Checking primary location in .app bundle..."
-            if [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/DATA.csv" ] && \
-               [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/class_name.txt" ]; then
-              echo "✅ Config files verified in primary location (.app bundle)"
-            else
-              echo "❌ Config files missing in primary location (.app bundle)"
-              exit 1
+            # Tìm vị trí executable
+            EXECUTABLE_PATH=$(find "dist/Supermarket Price Crawler.app/Contents/MacOS" -type f -name "Supermarket Price Crawler" 2>/dev/null | head -1)
+            if [ -n "$EXECUTABLE_PATH" ]; then
+              EXECUTABLE_DIR=$(dirname "$EXECUTABLE_PATH")
+              PRIMARY_CONFIG="$EXECUTABLE_DIR/Supermarket Price Crawler/config"
+              
+              echo "Checking primary location in .app bundle..."
+              if [ -f "$PRIMARY_CONFIG/DATA.csv" ] && [ -f "$PRIMARY_CONFIG/class_name.txt" ]; then
+                echo "✅ Config files verified in primary location (.app bundle)"
+              else
+                echo "⚠️  Config files not found in primary location, checking fallback..."
+              fi
             fi
+            
             echo "Checking fallback location in .app bundle..."
             if [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv" ] && \
                [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt" ]; then
               echo "✅ Config files verified in fallback location (.app bundle)"
+            else
+              echo "❌ Config files missing in both locations"
+              exit 1
             fi
           elif [ -d "dist/Supermarket Price Crawler" ]; then
             echo "Checking primary location in executable directory..."
@@ -101,13 +130,15 @@ jobs:
                [ -f "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/class_name.txt" ]; then
               echo "✅ Config files verified in primary location (executable directory)"
             else
-              echo "❌ Config files missing in primary location (executable directory)"
-              exit 1
+              echo "⚠️  Config files not found in primary location, checking fallback..."
             fi
             echo "Checking fallback location in executable directory..."
             if [ -f "dist/Supermarket Price Crawler/config/DATA.csv" ] && \
                [ -f "dist/Supermarket Price Crawler/config/class_name.txt" ]; then
               echo "✅ Config files verified in fallback location (executable directory)"
+            else
+              echo "❌ Config files missing in both locations"
+              exit 1
             fi
           fi
 

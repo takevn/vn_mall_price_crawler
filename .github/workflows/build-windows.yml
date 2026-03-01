@@ -35,7 +35,7 @@ jobs:
         run: |
           chcp 65001
           python -c "import sys; sys.stdout.reconfigure(encoding='utf-8')"
-          pyinstaller --clean --onedir --noconfirm ^
+          pyinstaller --clean --onedir --noconfirm --noconsole --windowed ^
             --name "Supermarket Price Crawler" ^
             --add-data "Supermarket Price Crawler\config;Supermarket Price Crawler\config" ^
             --log-level=WARN ^
@@ -85,7 +85,7 @@ jobs:
           path: dist/Supermarket Price Crawler
 
       - name: Upload to Google Drive
-        if: success() && secrets.GDRIVE_CREDENTIALS != null
+        if: success()
         env:
           GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
           SOURCE_DIR: dist/Supermarket Price Crawler

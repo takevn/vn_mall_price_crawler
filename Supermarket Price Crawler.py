@@ -18,6 +18,23 @@ import subprocess
 import platform
 from datetime import datetime
 
+# Fix Unicode encoding for Windows console
+if platform.system() == 'Windows':
+    try:
+        # Set UTF-8 encoding for stdout and stderr
+        if sys.stdout.encoding != 'utf-8':
+            sys.stdout.reconfigure(encoding='utf-8')
+        if sys.stderr.encoding != 'utf-8':
+            sys.stderr.reconfigure(encoding='utf-8')
+    except (AttributeError, ValueError):
+        # Fallback for older Python versions or when reconfigure is not available
+        try:
+            import io
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+        except:
+            pass
+
 # Suppress SSL warnings for sites that require verify=False (e.g. HC)
 warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 try:
@@ -25,6 +42,25 @@ try:
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 except:
     pass
+
+# Safe print function for Unicode characters
+def safe_print(*args, **kwargs):
+    """Print function that handles Unicode encoding errors gracefully"""
+    try:
+        print(*args, **kwargs)
+    except UnicodeEncodeError:
+        # Fallback: encode to ASCII with replacement for problematic characters
+        try:
+            encoded_args = []
+            for arg in args:
+                if isinstance(arg, str):
+                    encoded_args.append(arg.encode('ascii', 'replace').decode('ascii'))
+                else:
+                    encoded_args.append(str(arg).encode('ascii', 'replace').decode('ascii'))
+            print(*encoded_args, **kwargs)
+        except:
+            # Last resort: print as bytes
+            print(str(args).encode('ascii', 'replace').decode('ascii'))
 
 try:
     # Optional: used only for headless crawling on some JS-heavy sites (e.g. nguyenkim)
@@ -594,7 +630,7 @@ def main():
     for store_col in scraped_df.columns:
         if store_col != 'Model':
             prices_found = scraped_df[store_col].notna().sum()
-            print(f"{store_col}: {prices_found}/{len(scraped_df)} prices found")
+            safe_print(f"{store_col}: {prices_found}/{len(scraped_df)} prices found")
     
     # Open output file automatically
     try:
