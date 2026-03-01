@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      PYTHONIOENCODING: utf-8
+      PYTHONUTF8: 1
     steps:
       - uses: actions/checkout@v4
 
@@ -27,12 +30,15 @@ jobs:
           pip install playwright
           playwright install chromium
 
-      - name: Build EXE with PyInstaller
+      - name: Set UTF-8 encoding and build EXE
         shell: cmd
         run: |
-          pyinstaller --onedir ^
+          chcp 65001
+          python -c "import sys; sys.stdout.reconfigure(encoding='utf-8')"
+          pyinstaller --clean --onedir --noconfirm ^
             --name "Supermarket Price Crawler" ^
             --add-data "Supermarket Price Crawler\config;Supermarket Price Crawler\config" ^
+            --log-level=WARN ^
             "Supermarket Price Crawler.py"
 
       - name: Copy config folder to dist
