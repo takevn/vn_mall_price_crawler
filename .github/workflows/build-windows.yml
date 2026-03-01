@@ -35,6 +35,43 @@ jobs:
             --add-data "Supermarket Price Crawler\config;Supermarket Price Crawler\config" ^
             "Supermarket Price Crawler.py"
 
+      - name: Copy config folder to dist
+        shell: cmd
+        run: |
+          REM Copy config vào vị trí chính (theo code tìm config)
+          mkdir "dist\Supermarket Price Crawler\Supermarket Price Crawler\config"
+          copy "Supermarket Price Crawler\config\DATA.csv" "dist\Supermarket Price Crawler\Supermarket Price Crawler\config\DATA.csv"
+          copy "Supermarket Price Crawler\config\class_name.txt" "dist\Supermarket Price Crawler\Supermarket Price Crawler\config\class_name.txt"
+          REM Copy config vào vị trí fallback (nếu vị trí chính không tìm thấy)
+          mkdir "dist\Supermarket Price Crawler\config"
+          copy "Supermarket Price Crawler\config\DATA.csv" "dist\Supermarket Price Crawler\config\DATA.csv"
+          copy "Supermarket Price Crawler\config\class_name.txt" "dist\Supermarket Price Crawler\config\class_name.txt"
+          echo Config files copied successfully
+
+      - name: Verify config files
+        shell: cmd
+        run: |
+          echo Checking primary config location...
+          if exist "dist\Supermarket Price Crawler\Supermarket Price Crawler\config\DATA.csv" (
+            echo ✅ DATA.csv found in primary location
+          ) else (
+            echo ❌ DATA.csv missing in primary location
+            exit /b 1
+          )
+          if exist "dist\Supermarket Price Crawler\Supermarket Price Crawler\config\class_name.txt" (
+            echo ✅ class_name.txt found in primary location
+          ) else (
+            echo ❌ class_name.txt missing in primary location
+            exit /b 1
+          )
+          echo Checking fallback config location...
+          if exist "dist\Supermarket Price Crawler\config\DATA.csv" (
+            echo ✅ DATA.csv found in fallback location
+          )
+          if exist "dist\Supermarket Price Crawler\config\class_name.txt" (
+            echo ✅ class_name.txt found in fallback location
+          )
+
       - name: Upload artifact (EXE + config)
         uses: actions/upload-artifact@v4
         with:

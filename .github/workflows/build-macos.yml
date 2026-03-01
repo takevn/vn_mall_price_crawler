@@ -1,0 +1,122 @@
+# Build macOS .app trên GitHub (chạy trên runner macOS).
+# Push code lên GitHub → Actions chạy → tải artifact .zip chứa .app + config.
+
+name: Build macOS APP
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:  # Cho phép bấm "Run workflow" thủ công
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+          pip install playwright
+          playwright install chromium
+
+      - name: Build APP with PyInstaller
+        run: |
+          pyinstaller --onedir \
+            --name "Supermarket Price Crawler" \
+            --add-data "Supermarket Price Crawler/config:Supermarket Price Crawler/config" \
+            --windowed \
+            --osx-bundle-identifier "com.vnmall.crawler" \
+            "Supermarket Price Crawler.py"
+
+      - name: Verify build output
+        run: |
+          echo "Checking build output..."
+          ls -la dist/
+          if [ -d "dist/Supermarket Price Crawler.app" ]; then
+            echo "✅ .app bundle created successfully"
+            du -sh "dist/Supermarket Price Crawler.app"
+          elif [ -d "dist/Supermarket Price Crawler" ]; then
+            echo "✅ Executable directory created"
+            du -sh "dist/Supermarket Price Crawler"
+          else
+            echo "❌ Build output not found"
+            exit 1
+          fi
+
+      - name: Copy config folder to dist
+        run: |
+          # Copy config cho .app bundle
+          if [ -d "dist/Supermarket Price Crawler.app" ]; then
+            # Vị trí chính
+            mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config"
+            cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/DATA.csv"
+            cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/class_name.txt"
+            # Vị trí fallback
+            mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/config"
+            cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv"
+            cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt"
+            echo "✅ Config copied to .app bundle"
+          fi
+          
+          # Copy config cho executable directory
+          if [ -d "dist/Supermarket Price Crawler" ]; then
+            # Vị trí chính
+            mkdir -p "dist/Supermarket Price Crawler/Supermarket Price Crawler/config"
+            cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/DATA.csv"
+            cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/class_name.txt"
+            # Vị trí fallback
+            mkdir -p "dist/Supermarket Price Crawler/config"
+            cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler/config/DATA.csv"
+            cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler/config/class_name.txt"
+            echo "✅ Config copied to executable directory"
+          fi
+
+      - name: Verify config files
+        run: |
+          if [ -d "dist/Supermarket Price Crawler.app" ]; then
+            echo "Checking primary location in .app bundle..."
+            if [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/DATA.csv" ] && \
+               [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/Supermarket Price Crawler/config/class_name.txt" ]; then
+              echo "✅ Config files verified in primary location (.app bundle)"
+            else
+              echo "❌ Config files missing in primary location (.app bundle)"
+              exit 1
+            fi
+            echo "Checking fallback location in .app bundle..."
+            if [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv" ] && \
+               [ -f "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt" ]; then
+              echo "✅ Config files verified in fallback location (.app bundle)"
+            fi
+          elif [ -d "dist/Supermarket Price Crawler" ]; then
+            echo "Checking primary location in executable directory..."
+            if [ -f "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/DATA.csv" ] && \
+               [ -f "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/class_name.txt" ]; then
+              echo "✅ Config files verified in primary location (executable directory)"
+            else
+              echo "❌ Config files missing in primary location (executable directory)"
+              exit 1
+            fi
+            echo "Checking fallback location in executable directory..."
+            if [ -f "dist/Supermarket Price Crawler/config/DATA.csv" ] && \
+               [ -f "dist/Supermarket Price Crawler/config/class_name.txt" ]; then
+              echo "✅ Config files verified in fallback location (executable directory)"
+            fi
+          fi
+
+      - name: Upload artifact (APP + config)
+        uses: actions/upload-artifact@v4
+        with:
+          name: SupermarketPriceCrawler-macOS
+          path: |
+            dist/Supermarket Price Crawler*
+            dist/*.app
+          retention-days: 30
+
