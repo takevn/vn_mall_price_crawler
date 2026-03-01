@@ -13,6 +13,18 @@ import os
 from pathlib import Path
 from tqdm import tqdm
 import time
+import warnings
+import subprocess
+import platform
+from datetime import datetime
+
+# Suppress SSL warnings for sites that require verify=False (e.g. HC)
+warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+try:
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+except:
+    pass
 
 try:
     # Optional: used only for headless crawling on some JS-heavy sites (e.g. nguyenkim)
@@ -143,6 +155,55 @@ def extract_price_phongvu(url, soup):
     return None
 
 
+def extract_price_nguyenkim_jsonld(url, soup):
+    """Extract price from Nguyễn Kim using JSON-LD structured data"""
+    try:
+        scripts = soup.find_all('script', type='application/ld+json')
+        for script in scripts:
+            try:
+                data = json.loads(script.string)
+                # Handle both dict and list formats
+                if isinstance(data, list):
+                    for item in data:
+                        if isinstance(item, dict) and 'offers' in item:
+                            offers = item['offers']
+                            if isinstance(offers, dict) and 'price' in offers:
+                                price = offers['price']
+                                if isinstance(price, (int, float)):
+                                    return int(price)
+                                elif isinstance(price, str):
+                                    price = re.sub(r'[^\d]', '', price)
+                                    return int(price) if price else None
+                elif isinstance(data, dict):
+                    # Check if 'offers' is directly in data
+                    if 'offers' in data:
+                        offers = data['offers']
+                        if isinstance(offers, dict) and 'price' in offers:
+                            price = offers['price']
+                            if isinstance(price, (int, float)):
+                                return int(price)
+                            elif isinstance(price, str):
+                                price = re.sub(r'[^\d]', '', price)
+                                return int(price) if price else None
+                    # Check if '@graph' contains offers
+                    if '@graph' in data and isinstance(data['@graph'], list):
+                        for item in data['@graph']:
+                            if isinstance(item, dict) and 'offers' in item:
+                                offers = item['offers']
+                                if isinstance(offers, dict) and 'price' in offers:
+                                    price = offers['price']
+                                    if isinstance(price, (int, float)):
+                                        return int(price)
+                                    elif isinstance(price, str):
+                                        price = re.sub(r'[^\d]', '', price)
+                                        return int(price) if price else None
+            except (json.JSONDecodeError, KeyError, TypeError):
+                continue
+    except Exception:
+        pass
+    return None
+
+
 def extract_price_fallback(soup):
     """Fallback: find price from elements with price-like class or itemprop/data-price."""
     # 1) itemprop="price"
@@ -263,6 +324,55 @@ def extract_price_nguyenkim_headless(url):
         return None
 
 
+def extract_price_pico_jsonld(url, soup):
+    """Extract price from Pico using JSON-LD structured data"""
+    try:
+        scripts = soup.find_all('script', type='application/ld+json')
+        for script in scripts:
+            try:
+                data = json.loads(script.string)
+                # Handle both dict and list formats
+                if isinstance(data, list):
+                    for item in data:
+                        if isinstance(item, dict) and 'offers' in item:
+                            offers = item['offers']
+                            if isinstance(offers, dict) and 'price' in offers:
+                                price = offers['price']
+                                if isinstance(price, (int, float)):
+                                    return int(price)
+                                elif isinstance(price, str):
+                                    price = re.sub(r'[^\d]', '', price)
+                                    return int(price) if price else None
+                elif isinstance(data, dict):
+                    # Check if 'offers' is directly in data
+                    if 'offers' in data:
+                        offers = data['offers']
+                        if isinstance(offers, dict) and 'price' in offers:
+                            price = offers['price']
+                            if isinstance(price, (int, float)):
+                                return int(price)
+                            elif isinstance(price, str):
+                                price = re.sub(r'[^\d]', '', price)
+                                return int(price) if price else None
+                    # Check if '@graph' contains offers
+                    if '@graph' in data and isinstance(data['@graph'], list):
+                        for item in data['@graph']:
+                            if isinstance(item, dict) and 'offers' in item:
+                                offers = item['offers']
+                                if isinstance(offers, dict) and 'price' in offers:
+                                    price = offers['price']
+                                    if isinstance(price, (int, float)):
+                                        return int(price)
+                                    elif isinstance(price, str):
+                                        price = re.sub(r'[^\d]', '', price)
+                                        return int(price) if price else None
+            except (json.JSONDecodeError, KeyError, TypeError):
+                continue
+    except Exception:
+        pass
+    return None
+
+
 def extract_price_pico_headless(url):
     """Lấy giá sản phẩm chính trên Pico (block right-detail/price-wrapper do JS render)."""
     if not HAS_PLAYWRIGHT:
@@ -316,38 +426,39 @@ def crawl_price(url, store_name):
         return None
     
     try:
-        response = requests.get(url, headers=HEADERS, timeout=10)
+        # HC website has SSL certificate issues, disable verification for it
+        store_key = STORE_MAPPING.get(store_name, store_name.lower())
+        verify_ssl = store_key != 'hc'
+        
+        response = requests.get(url, headers=HEADERS, timeout=10, verify=verify_ssl)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'lxml')
         
         # Get selectors
         selectors = load_class_selectors()
-        store_key = STORE_MAPPING.get(store_name, store_name.lower())
         
         if store_key == 'phongvu':
             # Uses JSON-LD, keep existing logic
             price = extract_price_phongvu(url, soup)
         elif store_key == 'nguyenkim':
-            # Nguyễn Kim: first try standard HTML parsing, then headless if needed
-            if store_key in selectors:
-                price = extract_price_generic(url, soup, selectors[store_key])
+            # Nguyễn Kim: first try JSON-LD (most reliable), then HTML parsing, then headless
+            price = extract_price_nguyenkim_jsonld(url, soup)
+            if price is None:
+                if store_key in selectors:
+                    price = extract_price_generic(url, soup, selectors[store_key])
                 if price is None:
                     price = extract_price_fallback(soup)
-            else:
-                price = extract_price_fallback(soup)
-
             if price is None:
                 price = extract_price_nguyenkim_headless(url)
         elif store_key == 'pico':
-            # Pico: vùng sản phẩm chính (right-detail / price-wrapper.products) do JS render → dùng headless
-            price = extract_price_pico_headless(url)
+            # Pico: first try JSON-LD (most reliable), then headless, then HTML parsing
+            price = extract_price_pico_jsonld(url, soup)
+            if price is None:
+                price = extract_price_pico_headless(url)
             if price is None and store_key in selectors:
-                response = requests.get(url, headers=HEADERS, timeout=10)
-                response.raise_for_status()
-                soup = BeautifulSoup(response.content, 'lxml')
                 price = extract_price_generic(url, soup, selectors[store_key])
-                if price is None:
-                    price = extract_price_fallback(soup)
+            if price is None:
+                price = extract_price_fallback(soup)
         elif store_key in selectors:
             price = extract_price_generic(url, soup, selectors[store_key])
             if price is None:
@@ -395,6 +506,10 @@ def crawl_all_prices(df, selected_stores=None):
 
 def _create_parser():
     """Create argument parser based on available GUI library"""
+    # Generate default output filename with timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+    default_output = f'output_prices_{timestamp}.csv'
+    
     if HAS_GOOEY:
         parser = GooeyParser(description='Crawl prices from Vietnamese e-commerce websites')
         parser.add_argument(
@@ -406,7 +521,7 @@ def _create_parser():
         parser.add_argument(
             '--output',
             widget='FileSaver',
-            default='output_prices.csv',
+            default=default_output,
             help='Output CSV file path'
         )
         parser.add_argument(
@@ -427,7 +542,7 @@ def _create_parser():
         parser.add_argument(
             '--output',
             type=str,
-            default='output_prices.csv',
+            default=default_output,
             help='Output CSV file path'
         )
         parser.add_argument(
@@ -480,6 +595,20 @@ def main():
         if store_col != 'Model':
             prices_found = scraped_df[store_col].notna().sum()
             print(f"{store_col}: {prices_found}/{len(scraped_df)} prices found")
+    
+    # Open output file automatically
+    try:
+        output_file = Path(output_path).resolve()
+        if output_file.exists():
+            print(f"\nOpening output file: {output_file}")
+            if platform.system() == 'Windows':
+                os.startfile(str(output_file))
+            elif platform.system() == 'Darwin':  # macOS
+                subprocess.run(['open', str(output_file)])
+            else:  # Linux
+                subprocess.run(['xdg-open', str(output_file)])
+    except Exception as e:
+        print(f"Note: Could not open file automatically. You can open it manually: {output_path}")
 
 
 if __name__ == "__main__":

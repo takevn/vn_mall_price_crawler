@@ -7,6 +7,7 @@ import sys
 import os
 import argparse
 from pathlib import Path
+from datetime import datetime
 
 # Add the crawler directory to path if needed
 crawler_dir = Path(__file__).parent / "Supermarket Price Crawler"
@@ -14,6 +15,10 @@ if crawler_dir.exists():
     sys.path.insert(0, str(crawler_dir))
 
 def main():
+    # Generate default output filename with timestamp
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+    default_output = f'output_prices_{timestamp}.csv'
+    
     parser = argparse.ArgumentParser(
         description='Supermarket Price Crawler - Command Line Interface',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -36,8 +41,8 @@ Examples:
     parser.add_argument(
         '--output',
         type=str,
-        default='output_prices.csv',
-        help='Output file path for crawled prices (default: output_prices.csv)'
+        default=default_output,
+        help=f'Output file path for crawled prices (default: {default_output})'
     )
     
     parser.add_argument(
