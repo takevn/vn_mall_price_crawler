@@ -9,7 +9,7 @@ nk-price
 #dienmayxanh
 div
 box-price
-p
+-1
 -1
 #fptshop
 span

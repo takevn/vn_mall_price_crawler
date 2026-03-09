@@ -1,2 +1,0 @@
-# vn_mall_price_crawler
-vn_mall_price_crawler
