@@ -70,11 +70,13 @@ jobs:
               mkdir -p "$EXECUTABLE_DIR/Supermarket Price Crawler/config"
               cp "Supermarket Price Crawler/config/DATA.csv" "$EXECUTABLE_DIR/Supermarket Price Crawler/config/DATA.csv"
               cp "Supermarket Price Crawler/config/class_name.txt" "$EXECUTABLE_DIR/Supermarket Price Crawler/config/class_name.txt"
+              [ -f "Supermarket Price Crawler/config/MALL_DOMAIN.csv" ] && cp "Supermarket Price Crawler/config/MALL_DOMAIN.csv" "$EXECUTABLE_DIR/Supermarket Price Crawler/config/MALL_DOMAIN.csv"
               
               # Vị trí fallback: trong Contents/MacOS
               mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/config"
               cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv"
               cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt"
+              [ -f "Supermarket Price Crawler/config/MALL_DOMAIN.csv" ] && cp "Supermarket Price Crawler/config/MALL_DOMAIN.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/MALL_DOMAIN.csv"
               
               echo "✅ Config copied to .app bundle"
             else
@@ -82,6 +84,7 @@ jobs:
               mkdir -p "dist/Supermarket Price Crawler.app/Contents/MacOS/config"
               cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/DATA.csv"
               cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/class_name.txt"
+              [ -f "Supermarket Price Crawler/config/MALL_DOMAIN.csv" ] && cp "Supermarket Price Crawler/config/MALL_DOMAIN.csv" "dist/Supermarket Price Crawler.app/Contents/MacOS/config/MALL_DOMAIN.csv"
               echo "✅ Config copied to .app bundle (fallback location)"
             fi
           fi
@@ -92,10 +95,12 @@ jobs:
             mkdir -p "dist/Supermarket Price Crawler/Supermarket Price Crawler/config"
             cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/DATA.csv"
             cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/class_name.txt"
+            [ -f "Supermarket Price Crawler/config/MALL_DOMAIN.csv" ] && cp "Supermarket Price Crawler/config/MALL_DOMAIN.csv" "dist/Supermarket Price Crawler/Supermarket Price Crawler/config/MALL_DOMAIN.csv"
             # Vị trí fallback
             mkdir -p "dist/Supermarket Price Crawler/config"
             cp "Supermarket Price Crawler/config/DATA.csv" "dist/Supermarket Price Crawler/config/DATA.csv"
             cp "Supermarket Price Crawler/config/class_name.txt" "dist/Supermarket Price Crawler/config/class_name.txt"
+            [ -f "Supermarket Price Crawler/config/MALL_DOMAIN.csv" ] && cp "Supermarket Price Crawler/config/MALL_DOMAIN.csv" "dist/Supermarket Price Crawler/config/MALL_DOMAIN.csv"
             echo "✅ Config copied to executable directory"
           fi
 

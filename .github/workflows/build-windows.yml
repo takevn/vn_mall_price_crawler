@@ -48,10 +48,12 @@ jobs:
           mkdir "dist\Supermarket Price Crawler\Supermarket Price Crawler\config"
           copy "Supermarket Price Crawler\config\DATA.csv" "dist\Supermarket Price Crawler\Supermarket Price Crawler\config\DATA.csv"
           copy "Supermarket Price Crawler\config\class_name.txt" "dist\Supermarket Price Crawler\Supermarket Price Crawler\config\class_name.txt"
+          if exist "Supermarket Price Crawler\config\MALL_DOMAIN.csv" copy "Supermarket Price Crawler\config\MALL_DOMAIN.csv" "dist\Supermarket Price Crawler\Supermarket Price Crawler\config\MALL_DOMAIN.csv"
           REM Copy config vào vị trí fallback (nếu vị trí chính không tìm thấy)
           mkdir "dist\Supermarket Price Crawler\config"
           copy "Supermarket Price Crawler\config\DATA.csv" "dist\Supermarket Price Crawler\config\DATA.csv"
           copy "Supermarket Price Crawler\config\class_name.txt" "dist\Supermarket Price Crawler\config\class_name.txt"
+          if exist "Supermarket Price Crawler\config\MALL_DOMAIN.csv" copy "Supermarket Price Crawler\config\MALL_DOMAIN.csv" "dist\Supermarket Price Crawler\config\MALL_DOMAIN.csv"
           echo Config files copied successfully
 
       - name: Verify config files
